@@ -20,6 +20,11 @@ import {
   Toast,
   Notify,
   Dialog,
+  CellGroup,
+  Loading,
+  PullRefresh,
+  SwipeCell,
+  Popover,
 } from 'vant'
 
 Vue.use(Button)
@@ -39,6 +44,11 @@ Vue.use(Tabs)
 Vue.use(TreeSelect)
 Vue.use(Form)
 Vue.use(Field)
+Vue.use(CellGroup)
+Vue.use(Loading)
+Vue.use(PullRefresh)
+Vue.use(SwipeCell)
+Vue.use(Popover)
 Vue.prototype.$toast = Toast
 Vue.prototype.$notify = Notify
 Vue.prototype.$dialog = Dialog

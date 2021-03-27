@@ -44,7 +44,7 @@
                 type="info"
                 native-type="submit"
                 :loading="isLoading"
-                >登录</van-button
+                >登&nbsp;&nbsp;录</van-button
               >
             </div>
           </van-form>
@@ -58,8 +58,13 @@
               :rules="[{ pattern: /1\d{10}$/, message: '长度只能为11位数字' }]"
             />
             <div style="margin: 16px">
-              <van-button round block type="info" native-type="submit"
-                >登录</van-button
+              <van-button
+                round
+                block
+                type="info"
+                native-type="submit"
+                :loading="isLoading"
+                >登&nbsp;&nbsp;录</van-button
               >
             </div>
           </van-form>
@@ -71,6 +76,7 @@
 
 <script>
 import { getUserByParams, addUser } from "../../network/user";
+import { saveUser, getUser, saveOnline, getOnline } from "../../utils/storage";
 
 export default {
   name: "Login",
@@ -85,10 +91,32 @@ export default {
       username: "",
       password: "",
       telephone: "",
+      // 保存在线用户名字
+      arr: [],
+      // 保存在线用户数据
+      onlineUser: [],
     };
   },
-  created() {},
+  created() {
+    this.initData();
+  },
   methods: {
+    // 初始化数据
+    initData() {
+      let user = getUser();
+      if (user !== null) this.$router.replace("/home");
+      this.$store.state.tabIsShow = false;
+      this.$store.state.topIsShow = false;
+
+      const res = getOnline();
+      res === null ? "" : (this.arr = res);
+      console.log(this.arr);
+
+      // const data = getUser();
+      // data === null ? "" : (this.onlineUser = data);
+      // console.log(this.onlineUser);
+    },
+    // 普通登录模块
     async login(values) {
       this.isLoading = true;
       const res = await getUserByParams("username", values.username);
@@ -96,12 +124,24 @@ export default {
       if (data.length !== 0) {
         if (values.password === data[0].password) {
           setTimeout(() => {
+            if (this.onlineUser.length !== 0) {
+              let result = this.onlineUser.filter((obj) => {
+                return obj.username === values.username;
+              });
+              if (result.length !== 0) {
+                this.isLoading = false;
+                return this.$toast("账号已被登录");
+              }
+            }
+
             this.isLoading = false;
             this.$toast("登录成功");
-            this.$socket.emit("user", data[0].username, () => {});
-            this.$socket.on("allUser", (users) => {
-              console.log(users);
-            });
+            // this.onlineUser.push(data[0]);
+            // saveUser(this.onlineUser);
+            saveUser(data[0]);
+            this.arr.push(data[0].username);
+            saveOnline(this.arr);
+            this.$socket.emit("user", this.arr, () => {});
             this.$router.replace("/home");
           }, 1000);
         } else {
@@ -109,36 +149,56 @@ export default {
           this.$notify({ type: "danger", message: "密码错误" });
         }
       } else {
-        this.$dialog
-          .confirm({
-            title: "提示",
-            message: "没有该用户，是否立即注册？",
-          })
-          .then(() => {
-            setTimeout(async () => {
+        setTimeout(() => {
+          this.$dialog
+            .confirm({
+              title: "提示",
+              message: "没有该用户，是否立即注册？",
+            })
+            .then(() => {
+              setTimeout(async () => {
+                this.isLoading = false;
+                this.$toast("注册成功");
+                let res = await addUser(values);
+                console.log(res);
+              }, 1000);
+            })
+            .catch(() => {
               this.isLoading = false;
-              this.$toast("注册成功");
-              let res = await addUser(values);
-              console.log(res);
-            }, 1000);
-          })
-          .catch(() => {
-            this.isLoading = false;
-            this.$toast("已取消注册");
-          });
+              this.$toast("已取消注册");
+            });
+        }, 1000);
       }
     },
+    // 手机号登录模块
     async phoneLogin(values) {
+      this.isLoading = true;
       const res = await getUserByParams("telephone", values.telephone);
       const data = res.data.data;
       if (data.length !== 0) {
-        this.$toast("登录成功");
-        this.$socket.emit("user", data[0].username, () => {});
-        this.$socket.on("allUser", (users) => {
-          console.log(users);
-        });
-        this.$router.replace("/home");
+        setTimeout(() => {
+          if (this.onlineUser.length !== 0) {
+            let result = this.onlineUser.filter((obj) => {
+              return obj.telephone === values.telephone;
+            });
+            if (result.length !== 0) {
+              this.isLoading = false;
+              return this.$toast("账号已被登录");
+            }
+          }
+
+          this.isLoading = false;
+          this.$toast("登录成功");
+          // this.onlineUser.push(data[0]);
+          // saveUser(this.onlineUser);
+          saveUser(data[0]);
+          this.arr.push(data[0].username);
+          saveOnline(this.arr);
+          this.$socket.emit("user", this.arr, () => {});
+          this.$router.replace("/home");
+        }, 1000);
       } else {
+        this.isLoading = false;
         this.$notify({ type: "danger", message: "该手机号未被注册" });
       }
     },
@@ -150,7 +210,7 @@ export default {
 #login {
   width: 100%;
   height: 100vh;
-  background: url("https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fgss0.baidu.com%2F-4o3dSag_xI4khGko9WTAnF6hhy%2Fzhidao%2Fpic%2Fitem%2F00e93901213fb80e3fa665ea3fd12f2eb9389493.jpg&refer=http%3A%2F%2Fgss0.baidu.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1618904293&t=e4d3a87b1b41ec6f5985ebed3b36e588");
+  background: url("../../assets/img/bg.jpg");
   background-position: center;
   background-size: 100%;
 }

@@ -7,6 +7,11 @@
 <script>
 export default {
   name: "More",
+  created() {
+    this.$store.state.title = "发现";
+    this.$store.state.tabIsShow = true;
+    this.$store.state.topIsShow = true;
+  },
 };
 </script>
 

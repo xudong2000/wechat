@@ -1,5 +1,5 @@
 <template>
-  <div id="tabBar" v-if="$route.path !== '/login'">
+  <div id="tabBar">
     <router-link to="/home">
       <van-icon name="chat-o" v-show="$route.path !== '/home'" />
       <van-icon name="chat" v-show="$route.path === '/home'" />
@@ -36,7 +36,7 @@ export default {
 #tabBar {
   width: 100%;
   height: 60px;
-  background-color: #fff;
+  background-color: #f7f7f7;
   position: fixed;
   bottom: 0;
   left: 0;
