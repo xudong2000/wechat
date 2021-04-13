@@ -25,6 +25,8 @@ import {
   PullRefresh,
   SwipeCell,
   Popover,
+  IndexBar,
+  IndexAnchor,
 } from 'vant'
 
 Vue.use(Button)
@@ -49,6 +51,8 @@ Vue.use(Loading)
 Vue.use(PullRefresh)
 Vue.use(SwipeCell)
 Vue.use(Popover)
+Vue.use(IndexBar)
+Vue.use(IndexAnchor)
 Vue.prototype.$toast = Toast
 Vue.prototype.$notify = Notify
 Vue.prototype.$dialog = Dialog

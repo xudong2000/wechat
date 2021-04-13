@@ -76,7 +76,7 @@
 
 <script>
 import { getUserByParams, addUser } from "../../network/user";
-import { saveUser, getUser, saveOnline, getOnline } from "../../utils/storage";
+import { saveUser, getUser } from "../../utils/storage";
 
 export default {
   name: "Login",
@@ -91,10 +91,6 @@ export default {
       username: "",
       password: "",
       telephone: "",
-      // 保存在线用户名字
-      arr: [],
-      // 保存在线用户数据
-      onlineUser: [],
     };
   },
   created() {
@@ -107,14 +103,6 @@ export default {
       if (user !== null) this.$router.replace("/home");
       this.$store.state.tabIsShow = false;
       this.$store.state.topIsShow = false;
-
-      const res = getOnline();
-      res === null ? "" : (this.arr = res);
-      console.log(this.arr);
-
-      // const data = getUser();
-      // data === null ? "" : (this.onlineUser = data);
-      // console.log(this.onlineUser);
     },
     // 普通登录模块
     async login(values) {
@@ -124,24 +112,10 @@ export default {
       if (data.length !== 0) {
         if (values.password === data[0].password) {
           setTimeout(() => {
-            if (this.onlineUser.length !== 0) {
-              let result = this.onlineUser.filter((obj) => {
-                return obj.username === values.username;
-              });
-              if (result.length !== 0) {
-                this.isLoading = false;
-                return this.$toast("账号已被登录");
-              }
-            }
-
             this.isLoading = false;
             this.$toast("登录成功");
-            // this.onlineUser.push(data[0]);
-            // saveUser(this.onlineUser);
             saveUser(data[0]);
-            this.arr.push(data[0].username);
-            saveOnline(this.arr);
-            this.$socket.emit("user", this.arr, () => {});
+            this.$socket.emit("login", data[0]);
             this.$router.replace("/home");
           }, 1000);
         } else {
@@ -177,24 +151,10 @@ export default {
       const data = res.data.data;
       if (data.length !== 0) {
         setTimeout(() => {
-          if (this.onlineUser.length !== 0) {
-            let result = this.onlineUser.filter((obj) => {
-              return obj.telephone === values.telephone;
-            });
-            if (result.length !== 0) {
-              this.isLoading = false;
-              return this.$toast("账号已被登录");
-            }
-          }
-
           this.isLoading = false;
           this.$toast("登录成功");
-          // this.onlineUser.push(data[0]);
-          // saveUser(this.onlineUser);
           saveUser(data[0]);
-          this.arr.push(data[0].username);
-          saveOnline(this.arr);
-          this.$socket.emit("user", this.arr, () => {});
+          this.$socket.emit("login", data[0]);
           this.$router.replace("/home");
         }, 1000);
       } else {

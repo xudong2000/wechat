@@ -19,3 +19,6 @@ img {
 #chat {
   height: calc(100vh - 120px);
 }
+div {
+  box-sizing: border-box;
+}

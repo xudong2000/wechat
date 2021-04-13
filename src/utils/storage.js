@@ -13,14 +13,3 @@ export function getUser() {
 export function removeUser() {
   localStorage.clear()
 }
-
-// 保存在线人数
-export function saveOnline(arr) {
-  localStorage.setItem('online', JSON.stringify(arr))
-}
-
-// 获取在线人数
-export function getOnline() {
-  const res = JSON.parse(localStorage.getItem('online'))
-  return res
-}

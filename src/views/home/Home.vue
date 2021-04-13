@@ -1,16 +1,14 @@
 <template>
-  <van-pull-refresh v-model="isLoading" @refresh="onRefresh">
-    <div id="home">
-      <ul class="msgList">
-        <li v-for="item in buddyData" :key="item._id" @click="toChat(item)">
-          <div class="avatar">
-            <img :src="item.avatar" alt="" />
-          </div>
-          <span>{{ item.username }}</span>
-        </li>
-      </ul>
-    </div>
-  </van-pull-refresh>
+  <div id="home">
+    <ul class="msgList">
+      <li v-for="item in buddyData" :key="item._id" @click="toChat(item)">
+        <div class="avatar">
+          <img :src="item.avatar" alt="" />
+        </div>
+        <span>{{ item.username }}</span>
+      </li>
+    </ul>
+  </div>
 </template>
 
 <script>
@@ -22,7 +20,6 @@ export default {
   data() {
     return {
       show: false,
-      count: 0,
       isLoading: false,
     };
   },
@@ -44,13 +41,6 @@ export default {
     },
     toChat(chatObj) {
       this.$router.push(`/chat${chatObj._id}`);
-    },
-    onRefresh() {
-      setTimeout(() => {
-        this.$toast("刷新成功");
-        this.isLoading = false;
-        this.count++;
-      }, 2000);
     },
   },
 };
